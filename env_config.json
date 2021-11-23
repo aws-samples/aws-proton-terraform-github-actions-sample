@@ -1,3 +1,6 @@
 {
-    
+    "env_name" {
+       "Role": "arn:partition:service:region:account-id:resource-id"
+       "region": "us-east-1"
+    }
 }

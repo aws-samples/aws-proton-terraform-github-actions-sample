@@ -1,6 +1,10 @@
 {
-    "env_name" {
-       "Role": "arn:partition:service:region:account-id:resource-id"
-       "region": "us-east-1"
+    "env_name_1": {
+        "role": "arn:aws:iam::123456789:role/TerraformGitHubActionsRole",
+        "region": "us-west-2"
+    },
+    "env_name_2": {
+        "role": "arn:aws:iam::123456789:role/TerraformGitHubActionsRole",
+        "region": "us-west-2"
     }
 }

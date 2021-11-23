@@ -1,0 +1,168 @@
+# This workflow installs the latest version of Terraform CLI and configures the Terraform CLI configuration file
+# with an API token for Terraform Cloud (app.terraform.io). On pull request events, this workflow will run
+# `terraform init`, `terraform fmt`, and `terraform plan` (speculative plan via Terraform Cloud). On push events
+# to the main branch, `terraform apply` will be executed.
+#
+# Documentation for `hashicorp/setup-terraform` is located here: https://github.com/hashicorp/setup-terraform
+#
+# To use this workflow, you will need to complete the following setup steps.
+#
+# 1. Create a `main.tf` file in the root of this repository with the `remote` backend and one or more resources defined.
+#   Example `main.tf`:
+#     # The configuration for the `remote` backend.
+#     terraform {
+#       backend "remote" {
+#         # The name of your Terraform Cloud organization.
+#         organization = "example-organization"
+#
+#         # The name of the Terraform Cloud workspace to store Terraform state files in.
+#         workspaces {
+#           name = "example-workspace"
+#         }
+#       }
+#     }
+#
+#     # An example resource that does nothing.
+#     resource "null_resource" "example" {
+#       triggers = {
+#         value = "A example resource that does nothing!"
+#       }
+#     }
+#
+#
+# 2. Generate a Terraform Cloud user API token and store it as a GitHub secret (e.g. TF_API_TOKEN) on this repository.
+#   Documentation:
+#     - https://www.terraform.io/docs/cloud/users-teams-organizations/api-tokens.html
+#     - https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets
+#
+# 3. Reference the GitHub secret in step using the `hashicorp/setup-terraform` GitHub Action.
+#   Example:
+#     - name: Setup Terraform
+#       uses: hashicorp/setup-terraform@v1
+#       with:
+#         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+name: 'Terraform'
+
+on:
+  workflow_call:
+    inputs:
+      role_arn:
+        description: 'AWS IAM Role ARN to use to deploy with'
+        required: true
+        type: string  
+      environment:
+        description: 'Environment name getting deployed'
+        required: true
+        type: string
+      aws_region:
+        description: 'AWS region'
+        required: false
+        default: 'us-west-2'
+        type: string
+      working_directory:
+        description: 'Directory containining the terraform code to run'
+        required: true
+        type: string
+      resource_arn:
+        description: 'Arn for resource getting deployed'
+        required: true
+        type: string
+      deployment_id:
+        description: 'Deployment id for current run provided in proton deployment metadata file'
+        required: true
+        type: string
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    
+      
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+      continue-on-error: true
+    
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@9aaa1daa91b40ce855e24cd45fb39b2ca18aeaf1
+      with:
+        aws-region: ${{ inputs.aws_region }}
+        role-to-assume: ${{ inputs.role_arn }}
+        role-session-name: TF-Github-Actions
+      continue-on-error: true
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.7
+        terraform_wrapper: false
+      continue-on-error: true
+
+    #######################################################
+    # MAKE SURE TO UPDATE THE BUCKET TO YOUR STATE BUCKET #
+    #######################################################
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init -backend-config="bucket=my-proton-terraform-state-bucket" -backend-config="key=${{ inputs.working_directory }}terraform.tfstate" -backend-config="region=us-west-2"
+      continue-on-error: true
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -diff -check
+      continue-on-error: true
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      run: terraform plan
+      continue-on-error: true
+
+    # On push to main, build or change infrastructure according to Terraform configuration files
+    # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    - name: Terraform Apply
+      id: tf_apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve
+      continue-on-error: true
+
+    # This is a temporary measure until we have launched
+    - name: Install Proton Model
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        aws s3 cp s3://aws-proton-preview-public-files/model/proton-2020-07-20.normal.json  .
+        aws configure add-model --service-model "file://proton-2020-07-20.normal.json" --service-name proton
+
+      
+    - name: Notify Proton Success
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.tf_apply.outcome == 'success'
+      run: |
+        # Get outputs as json
+        outputs_json=$(terraform output -json)
+
+        # The outputs parameters expects a list of key=keyName,valueString=value key=key2Name,valueString=value2 etc...
+        # So here we convert the output json into a shell array
+        # NOTE: This will probably not play nicely with complex output objects (non primitives)
+
+        formatted_outputs=( $(echo $outputs_json | jq -r "to_entries|map(\"key=\(.key),valueString=\(.value.value|tostring)\")|.[]") )
+
+        # Notify proton
+        aws proton notify-resource-deployment-status-change --resource-arn ${{ inputs.resource_arn }} --status SUCCEEDED --deployment-id ${{ inputs.deployment_id }} --outputs $formatted_outputs
+        echo "Notify success!"   
+        
+    - name: Notify Proton Failure
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.tf_apply.outcome != 'success'
+      run: |
+        aws proton notify-resource-deployment-status-change --resource-arn ${{ inputs.resource_arn }} --status FAILED --deployment-id ${{ inputs.deployment_id }}
+        echo "Notify failure!"
+      

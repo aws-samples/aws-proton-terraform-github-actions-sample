@@ -1,10 +1,6 @@
 {
-    "env_name_1": {
-        "role": "arn:aws:iam::123456789:role/TerraformGitHubActionsRole",
-        "region": "us-west-2"
-    },
-    "env_name_2": {
-        "role": "arn:aws:iam::123456789:role/TerraformGitHubActionsRole",
-        "region": "us-west-2"
+    "test_env": {
+        "role": "arn:aws:iam::622603276180:role/ExampleGithubRole",
+        "region": "us-east-1"
     }
 }

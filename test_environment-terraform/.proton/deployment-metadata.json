@@ -1,0 +1,9 @@
+{
+  "deploymentId" : "dcf2bae7-572f-42ba-8592-c136f86f6a3a",
+  "resourceMetadata" : {
+    "arn" : "arn:aws:proton:us-east-1:622603276180:environment/test_environment-terraform",
+    "templateArn" : "arn:aws:proton:us-east-1:622603276180:environment-template/Terraform-test-v2",
+    "templateMajorVersion" : "1",
+    "templateMinorVersion" : "0"
+  }
+}

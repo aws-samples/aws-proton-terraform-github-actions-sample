@@ -1,5 +1,5 @@
 {
-    "test_env": {
+    "test_environment-terraform": {
         "role": "arn:aws:iam::622603276180:role/ExampleGithubRole",
         "region": "us-east-1"
     }

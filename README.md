@@ -13,8 +13,8 @@ To configure this sample, follow this instructiuons:
 4. Open the file env_config.json and update the role ARN with the output from (3), the environment name with the name of the environment you are going to create and the region with your preferred deployment region. This will tell Terraform the role and region to use for deployments. You can use different roles for each environment by adding them to this file
 5. Open the file .github/workflows/terraform.yml and update the S3 bucket with the output from (3). This will tell Terraform where to store the state file
 6. Take the sample template and create a Proton environment template by following the instructions here https://docs.aws.amazon.com/proton/latest/adminguide/template-create.html
-7. Register your repository with Proton by following the instructions here: URL
-8. Deploy your environment in Proton by following the instructions here: URL
+7. Register your repository with Proton by following the instructions here: https://docs.aws.amazon.com/proton/latest/adminguide/ag-repositories.html
+8. Deploy your environment in Proton by following the instructions here: https://docs.aws.amazon.com/proton/latest/adminguide/ag-environments.html
 9. Sortly after you trigger the deployment, come back to your repository to see the Pull Request. Once you merge it, you can go back to Proton and see the updated status of your newly created environment
 
 Fell free to reach out with questions or open a ticket with suggestions in our public roadmap at https://github.com/aws/aws-proton-public-roadmap

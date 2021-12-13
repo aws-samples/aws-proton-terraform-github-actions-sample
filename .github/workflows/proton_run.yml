@@ -100,7 +100,7 @@ jobs:
     
   call-terraform-workflow:
     needs: get-deployment-data
-    uses: awishn02/tf-os-sample/.github/workflows/terraform.yml@main
+    uses: yskopets/aws-proton-terraform-github-actions-sample/.github/workflows/terraform.yml@main
     with:
       role_arn: ${{ needs.get-deployment-data.outputs.role-arn }}
       environment: ${{ needs.get-deployment-data.outputs.environment }}

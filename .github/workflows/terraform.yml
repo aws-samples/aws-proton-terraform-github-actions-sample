@@ -115,7 +115,7 @@ jobs:
     #######################################################
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      run: terraform init -backend-config="bucket=my-proton-terraform-state-bucket" -backend-config="key=${{ inputs.working_directory }}terraform.tfstate" -backend-config="region=us-west-2"
+      run: terraform init -backend-config="bucket=wishnick-terraform-states" -backend-config="key=${{ inputs.working_directory }}terraform.tfstate" -backend-config="region=us-west-2"
       continue-on-error: true
 
     # Checks that all Terraform configuration files adhere to a canonical format

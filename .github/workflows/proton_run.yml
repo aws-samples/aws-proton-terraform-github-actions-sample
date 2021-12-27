@@ -5,6 +5,8 @@ name: 'proton-run'
 
 on:
   push:
+    branches:
+      - main
     paths-ignore:
       - '.github/**'
       - 'env_config.json'

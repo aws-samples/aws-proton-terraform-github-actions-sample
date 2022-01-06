@@ -1,9 +1,0 @@
-{
-  "deploymentId" : "ca7506a7-0b0c-4912-8daf-32c02dbec1e9",
-  "resourceMetadata" : {
-    "arn" : "arn:aws:proton:us-east-1:617296401743:environment/my_new_tf_env",
-    "templateArn" : "arn:aws:proton:us-east-1:617296401743:environment-template/tf-template-fixes-test",
-    "templateMajorVersion" : "1",
-    "templateMinorVersion" : "0"
-  }
-}

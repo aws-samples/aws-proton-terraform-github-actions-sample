@@ -1,9 +1,5 @@
 {
-    "env_name_1": {
-        "role": "arn:aws:iam::123456789:role/TerraformGitHubActionsRole",
-        "region": "us-west-2"
-    },
-    "env_name_2": {
+    "sample-vpc-environment-template": {
         "role": "arn:aws:iam::123456789:role/TerraformGitHubActionsRole",
         "region": "us-west-2"
     }

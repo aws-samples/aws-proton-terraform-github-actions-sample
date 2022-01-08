@@ -8,11 +8,6 @@ schema:
       type: object
       description: "Input properties for a vpc environment."
       properties:
-        az:
-          type: string
-          description: "The az you want your environment to deployed to, e.g. us-east-1a"
-          minLength: 1
-          maxLength: 10
         vpc_name:
           type: string
           description: "Name for vpc"

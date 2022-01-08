@@ -1,7 +1,7 @@
 Parameters:
   FullRepoName:
     Type: String
-    Default: rafavallina/tf-os-sample
+    Default: augentry/aws-proton-terraform-github-actions-sample
 
 Resources:
   Role:

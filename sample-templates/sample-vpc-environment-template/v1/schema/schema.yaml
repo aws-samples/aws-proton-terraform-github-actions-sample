@@ -12,5 +12,4 @@ schema:
           type: string
           description: "Name for vpc"
       required:
-        - az
         - vpc_name

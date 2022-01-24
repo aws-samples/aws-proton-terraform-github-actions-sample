@@ -50,7 +50,7 @@ aws proton update-environment-template-version \
         --region REGION
 ```
 9. Register your repository with Proton by following the instructions [here](https://docs.aws.amazon.com/proton/latest/adminguide/ag-create-repo.html)
-10. Deploy your environment in Proton by following the instructions [here](https://docs.aws.amazon.com/proton/latest/adminguide/ag-create-env.html#ag-create-env-pull-request). Change `GITHUB_USER` to be name of the GitHub account with the forked repository.
+10. Deploy your environment in Proton by following the instructions using the following commands. Change `GITHUB_USER` to be name of the GitHub account with the forked repository. For more information see the documentation [here](https://docs.aws.amazon.com/proton/latest/adminguide/ag-create-env.html#ag-create-env-pull-request)
 ```
  aws proton create-environment \
         --name "ENVIRONMENT_NAME" \

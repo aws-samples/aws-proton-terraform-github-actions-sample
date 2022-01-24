@@ -97,7 +97,7 @@ jobs:
 
         if [[ $(jq -r --arg env $environment_name 'has($env)' env_config.json) = "false" ]]; then
           echo "Missing $env from env_config.json, existing"
-          exit 0
+          exit 1
         fi
 
         echo "::set-output name=working-directory::$working_directory"

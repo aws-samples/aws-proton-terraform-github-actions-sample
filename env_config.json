@@ -1,10 +1,7 @@
 {
-    "env_name_1": {
-        "role": "arn:aws:iam::123456789:role/TerraformGitHubActionsRole",
-        "region": "us-west-2"
-    },
-    "env_name_2": {
-        "role": "arn:aws:iam::123456789:role/TerraformGitHubActionsRole",
-        "region": "us-west-2"
+    "sample-vpc-environment": {
+        "role": "arn:aws:iam::ACCOUNT_ID:role/ExampleGithubRole",
+        "region": "us-east-1",
+        "state_bucket":"aws-proton-terraform-bucket-ACCOUNT_ID"
     }
 }

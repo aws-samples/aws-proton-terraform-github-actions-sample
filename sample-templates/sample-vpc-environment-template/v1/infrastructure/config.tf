@@ -10,7 +10,8 @@ terraform {
 }
 
 # Configure the AWS Provider
-provider "aws" {
-  region = "us-west-2"
-}
+provider "aws" {}
 
+variable "aws_region" {
+  type = string
+}

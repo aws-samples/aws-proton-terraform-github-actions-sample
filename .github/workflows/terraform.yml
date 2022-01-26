@@ -58,7 +58,7 @@ on:
       aws_region:
         description: 'AWS region'
         required: false
-        default: 'us-west-2'
+        default: 'us-east-2'
         type: string
       working_directory:
         description: 'Directory containining the terraform code to run'

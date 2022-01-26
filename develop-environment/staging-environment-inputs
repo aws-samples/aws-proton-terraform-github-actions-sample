@@ -1,1 +1,0 @@
-{"environment":{"name":"staging-environment","inputs":{"vpc_name":"aws-proton-sample-vpc"}}}

@@ -1,7 +1,7 @@
 {
-    "sample-vpc-environment": {
-        "role": "arn:aws:iam::ACCOUNT_ID:role/ExampleGithubRole",
-        "region": "us-east-1",
-        "state_bucket":"aws-proton-terraform-bucket-ACCOUNT_ID"
+    "my_new_tf_env": {
+        "role": "arn:aws:iam::617296401743:role/TerraformGitHubActionsRole",
+        "region": "us-west-2",
+        "state_bucket":"wishnick-terraform-states"
     }
 }

@@ -7,10 +7,8 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - '.github/**'
-      - 'env_config.json'
-      - 'sample-templates/**'
+    paths:
+      - '**/.proton/deployment-metadata.json'
 
 jobs:
   get-deployment-data:
@@ -18,12 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     
     outputs:
-      role-arn: ${{ steps.get-data.outputs.role-arn }}
+      role_arn: ${{ steps.get-data.outputs.role_arn }}
       environment: ${{ steps.get-data.outputs.environment }}
       resource-arn: ${{ steps.get-data.outputs.resource-arn }}
       working-directory: ${{ steps.get-data.outputs.working-directory }}
       deployment-id: ${{ steps.get-data.outputs.deployment-id }}
-      region: ${{ steps.get-data.outputs.region }}
+      aws_region: ${{ steps.get-data.outputs.aws_region }}
+      state_bucket: ${{ steps.get-data.outputs.state_bucket }}
     
     permissions:
       id-token: write
@@ -47,7 +46,7 @@ jobs:
             echo "found file"
             if [[ "$found" == true ]]; then
               echo "More than one resource found to have a new deployment, I'm not sure which one to update, exiting."
-              exit 0
+              exit 1
             fi
             echo "setting found to true"
             found=true
@@ -55,6 +54,10 @@ jobs:
             echo "::set-output name=deployment-metadata-path::$changed_file"
           fi
         done
+        if [[ "$found" == false ]]; then
+          echo "No change made to deployment-metadata.json, exiting"
+          exit 1
+        fi
     
     - name: Get data
       id: get-data
@@ -91,22 +94,32 @@ jobs:
 
           working_directory=pipeline/$service_name
         fi
+
+        if [[ $(jq -r --arg env $environment_name 'has($env)' env_config.json) = "false" ]]; then
+          echo "Missing $env from env_config.json, existing"
+          exit 1
+        fi
+
         echo "::set-output name=working-directory::$working_directory"
         echo "::set-output name=environment::$environment_name"
         
         role_arn=$(jq -r --arg env $environment_name '.[$env]["role"]' env_config.json)
-        echo "::set-output name=role-arn::$role_arn"
+        echo "::set-output name=role_arn::$role_arn"
 
-        region=$(jq -r --arg env $environment_name '.[$env]["region"]' env_config.json)
-        echo "::set-output name=region::$region"
+        aws_region=$(jq -r --arg env $environment_name '.[$env]["region"]' env_config.json)
+        echo "::set-output name=aws_region::$aws_region"
+
+        state_bucket=$(jq -r --arg env $environment_name '.[$env]["state_bucket"]' env_config.json)
+        echo "::set-output name=state_bucket::$state_bucket"
     
   call-terraform-workflow:
     needs: get-deployment-data
     uses: awishn02/aws-proton-terraform-github-actions-sample/.github/workflows/terraform.yml@main
     with:
-      role_arn: ${{ needs.get-deployment-data.outputs.role-arn }}
+      role_arn: ${{ needs.get-deployment-data.outputs.role_arn }}
       environment: ${{ needs.get-deployment-data.outputs.environment }}
       resource_arn: ${{ needs.get-deployment-data.outputs.resource-arn }}
       working_directory: ${{ needs.get-deployment-data.outputs.working-directory }}
       deployment_id: ${{ needs.get-deployment-data.outputs.deployment-id }}
-      aws_region: ${{ needs.get-deployment-data.outputs.region }}
+      aws_region: ${{ needs.get-deployment-data.outputs.aws_region }}
+      state_bucket: ${{ needs.get-deployment-data.outputs.state_bucket }}

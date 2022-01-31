@@ -1,7 +1,6 @@
 Parameters:
   FullRepoName:
     Type: String
-    Default: rafavallina/tf-os-sample
 
 Resources:
   Role:
@@ -32,18 +31,19 @@ Resources:
     Type: AWS::IAM::OIDCProvider
     Properties:
       Url: https://token.actions.githubusercontent.com
-      ThumbprintList: [a031c46782e6e6c662c2c87c76da9aa62ccabd8e]
+      ThumbprintList: [6938fd4d98bab03faadb97b34396831e3780aea1]
       ClientIdList:
         - sigstore
         - sts.amazon.com
 
   StateFileBucket:
     # This bucket will be used to store your Terraform Open Source state files
-    # Enter the bucket name in your .github/workflows/terraform.yml file
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref "AWS::StackName"
-
+      BucketName: !Join
+       - ''
+       - - 'aws-proton-terraform-bucket-'
+         - !Ref AWS::AccountId
 Outputs:
   Role:
     Description: "The role that will be used to provision infrastructure. Enter it in your env_config.json file"

@@ -5,7 +5,11 @@ name: 'proton-run'
 
 on:
   pull_request:
-    types: [opened, reopened]
+    types:
+      - opened
+      - reopened
+    paths:
+      - '**/.proton/deployment-metadata.json'
   push:
     branches:
       - main

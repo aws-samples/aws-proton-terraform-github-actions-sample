@@ -1,1 +1,1 @@
-{"environment":{"name":"my_new_tf_env","inputs":{"az":"us-east-1a","vpc_name":"my_new_vpc_3"}}}
+{"environment":{"name":"my_new_tf_env","inputs":{"vpc_name":"new_vpc_5"}}}

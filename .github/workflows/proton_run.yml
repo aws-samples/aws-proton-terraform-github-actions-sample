@@ -74,7 +74,7 @@ jobs:
         
         IFS=':'
         read -a split_arn <<< "$modified_resource_arn"
-        proton_region=${split_arn[3])
+        proton_region=${split_arn[3]}
         echo "::set-output name=proton_region::$proton_region"
 
         deployment_id=$(jq -r '.deploymentId' ${{ steps.find-modified.outputs.deployment-metadata-path }})

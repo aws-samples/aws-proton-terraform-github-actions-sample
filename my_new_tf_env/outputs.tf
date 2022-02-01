@@ -7,6 +7,6 @@ If the resource is no longer is accessible within AWS Proton, it may have been d
 */
 
 output "vpc_arn" {
-    value = module.vpc.vpc_arn
+  value = module.vpc.vpc_arn
 }
 

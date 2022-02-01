@@ -28,7 +28,7 @@ jobs:
       working_directory: ${{ steps.get-data.outputs.working_directory }}
       deployment_id: ${{ steps.get-data.outputs.deployment_id }}
       target_region: ${{ steps.get-data.outputs.target_region }}
-      proton_region: ${{ steps.get-data.outputs.proton-region }}
+      proton_region: ${{ steps.get-data.outputs.proton_region }}
       state_bucket: ${{ steps.get-data.outputs.state_bucket }}
     
     permissions:

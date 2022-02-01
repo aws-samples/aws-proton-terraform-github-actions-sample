@@ -146,6 +146,7 @@ jobs:
       continue-on-error: true
     
     - name: Configure AWS Credentials
+      id: assume_role
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-region: ${{ needs.get-deployment-data.outputs.target_region }}
@@ -155,6 +156,7 @@ jobs:
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
+      id: tf_setup
       uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 1.0.7
@@ -163,16 +165,19 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
+      id: tf_init
       run: terraform init -backend-config="bucket=${{ needs.get-deployment-data.outputs.state_bucket }}" -backend-config="key=${{ needs.get-deployment-data.outputs.working_directory }}terraform.tfstate" -backend-config="region=${{ needs.get-deployment-data.outputs.target_region }}"
       continue-on-error: true
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
+      id: tf_fmt
       run: terraform fmt -diff -check
       continue-on-error: true
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
+      id: tf_plan
       run: terraform plan -var="aws_region=${{ needs.get-deployment-data.outputs.target_region }}"
       continue-on-error: true
 
@@ -193,7 +198,9 @@ jobs:
 
       
     - name: Notify Proton Success
+      id: notify_success
       if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.tf_apply.outcome == 'success'
+      continue-on-error: true
       run: |
         # Get outputs as json
         outputs_json=$(terraform output -json)
@@ -209,7 +216,13 @@ jobs:
         echo "Notify success!"   
         
     - name: Notify Proton Failure
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.tf_apply.outcome != 'success'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && (steps.tf_apply.outcome != 'success' || steps.notify_success.outcome != 'success')
       run: |
         aws proton notify-resource-deployment-status-change --region ${{ needs.get-deployment-data.outputs.proton_region }} --resource-arn ${{ needs.get-deployment-data.outputs.resource_arn }} --status FAILED --deployment-id ${{ needs.get-deployment-data.outputs.deployment_id }}
         echo "Notify failure!"
+    
+    # When running in response to a pull request, we are just validating the terraform is okay, this will force the workflow to fail if it's not.
+    - name: Check for validation failures
+      if: github.event_name == 'pull_request' && (steps.assume_role.outcome != 'sucess' || steps.tf_setup.outcome != 'success' || steps.tf_init.outcome != 'success' || steps.tf_fmt.outcome != 'success' || steps.tf_plan.outcome != 'success')
+      run: exit 1
+        

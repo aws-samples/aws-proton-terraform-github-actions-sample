@@ -148,7 +148,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-region: ${{ needs.get-deployment-data.outputs.aws_region }}
+        aws-region: ${{ needs.get-deployment-data.outputs.target_region }}
         role-to-assume: ${{ needs.get-deployment-data.outputs.role_arn }}
         role-session-name: TF-Github-Actions
       continue-on-error: false
@@ -163,7 +163,7 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      run: terraform init -backend-config="bucket=${{ needs.get-deployment-data.outputs.state_bucket }}" -backend-config="key=${{ needs.get-deployment-data.outputs.working_directory }}terraform.tfstate" -backend-config="region=${{ needs.get-deployment-data.outputs.aws_region }}"
+      run: terraform init -backend-config="bucket=${{ needs.get-deployment-data.outputs.state_bucket }}" -backend-config="key=${{ needs.get-deployment-data.outputs.working_directory }}terraform.tfstate" -backend-config="region=${{ needs.get-deployment-data.outputs.target_region }}"
       continue-on-error: true
 
     # Checks that all Terraform configuration files adhere to a canonical format

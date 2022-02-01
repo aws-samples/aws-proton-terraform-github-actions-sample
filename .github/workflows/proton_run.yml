@@ -27,7 +27,8 @@ jobs:
       resource_arn: ${{ steps.get-data.outputs.resource_arn }}
       working_directory: ${{ steps.get-data.outputs.working_directory }}
       deployment_id: ${{ steps.get-data.outputs.deployment_id }}
-      aws_region: ${{ steps.get-data.outputs.aws_region }}
+      target_region: ${{ steps.get-data.outputs.target_region }}
+      proton_region: ${{ steps.get-data.outputs.proton-region }}
       state_bucket: ${{ steps.get-data.outputs.state_bucket }}
     
     permissions:
@@ -70,6 +71,11 @@ jobs:
       run: |
         modified_resource_arn=$(jq -r '.resourceMetadata.arn' ${{ steps.find-modified.outputs.deployment-metadata-path }})
         echo "::set-output name=resource_arn::$modified_resource_arn"
+        
+        IFS=':'
+        read -a split_arn <<< "$modified_resource_arn"
+        proton_region=${split_arn[3])
+        echo "::set-output name=proton_region::$proton_region"
 
         deployment_id=$(jq -r '.deploymentId' ${{ steps.find-modified.outputs.deployment-metadata-path }})
         echo "::set-output name=deployment_id::$deployment_id"
@@ -112,8 +118,8 @@ jobs:
         role_arn=$(jq -r --arg env $environment_name '.[$env]["role"]' env_config.json)
         echo "::set-output name=role_arn::$role_arn"
 
-        aws_region=$(jq -r --arg env $environment_name '.[$env]["region"]' env_config.json)
-        echo "::set-output name=aws_region::$aws_region"
+        target_region=$(jq -r --arg env $environment_name '.[$env]["region"]' env_config.json)
+        echo "::set-output name=target_region::$target_region"
 
         state_bucket=$(jq -r --arg env $environment_name '.[$env]["state_bucket"]' env_config.json)
         echo "::set-output name=state_bucket::$state_bucket"
@@ -167,7 +173,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -var="aws_region=${{ needs.get-deployment-data.outputs.aws_region }}"
+      run: terraform plan -var="aws_region=${{ needs.get-deployment-data.outputs.target_region }}"
       continue-on-error: true
 
     # On push to main, build or change infrastructure according to Terraform configuration files
@@ -175,7 +181,7 @@ jobs:
     - name: Terraform Apply
       id: tf_apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve -var="aws_region=${{ needs.get-deployment-data.outputs.aws_region }}"
+      run: terraform apply -auto-approve -var="aws_region=${{ needs.get-deployment-data.outputs.target_region }}"
       continue-on-error: true
 
     # This is a temporary measure until this feature exits Public Preview
@@ -199,11 +205,11 @@ jobs:
         formatted_outputs=( $(echo $outputs_json | jq -r "to_entries|map(\"key=\(.key),valueString=\(.value.value|tostring)\")|.[]") )
 
         # Notify proton
-        aws proton notify-resource-deployment-status-change --resource-arn ${{ needs.get-deployment-data.outputs.resource_arn }} --status SUCCEEDED --deployment-id ${{ needs.get-deployment-data.outputs.deployment_id }} --outputs $formatted_outputs
+        aws proton notify-resource-deployment-status-change --region ${{ needs.get-deployment-data.outputs.proton_region }} --resource-arn ${{ needs.get-deployment-data.outputs.resource_arn }} --status SUCCEEDED --deployment-id ${{ needs.get-deployment-data.outputs.deployment_id }} --outputs $formatted_outputs
         echo "Notify success!"   
         
     - name: Notify Proton Failure
       if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.tf_apply.outcome != 'success'
       run: |
-        aws proton notify-resource-deployment-status-change --resource-arn ${{ needs.get-deployment-data.outputs.resource_arn }} --status FAILED --deployment-id ${{ needs.get-deployment-data.outputs.deployment_id }}
+        aws proton notify-resource-deployment-status-change --region ${{ needs.get-deployment-data.outputs.proton_region }} --resource-arn ${{ needs.get-deployment-data.outputs.resource_arn }} --status FAILED --deployment-id ${{ needs.get-deployment-data.outputs.deployment_id }}
         echo "Notify failure!"

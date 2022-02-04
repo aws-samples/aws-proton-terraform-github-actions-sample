@@ -144,7 +144,7 @@ jobs:
         working-directory: ${{ needs.get-deployment-data.outputs.working_directory }}
         shell: bash # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
 
-    if: needs.get-deployment-data.outcome == 'success'
+    if: needs.get-deployment-data.status == 'success'
     continue-on-error: true
 
     steps:

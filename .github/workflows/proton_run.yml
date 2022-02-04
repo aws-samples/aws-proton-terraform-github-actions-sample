@@ -200,6 +200,11 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      
+    defaults:
+      run:
+        working-directory: ${{ needs.get-deployment-data.outputs.working_directory }}
+        shell: bash # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
 
     steps:
     - name: Configure AWS Credentials
@@ -213,8 +218,9 @@ jobs:
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       id: tf_init
+      continue-on-error: true
       run: terraform init -backend-config="bucket=${{ needs.get-deployment-data.outputs.state_bucket }}" -backend-config="key=${{ needs.get-deployment-data.outputs.working_directory }}terraform.tfstate" -backend-config="region=${{ needs.get-deployment-data.outputs.target_region }}"
-      
+
     # This is a temporary measure until this feature exits Public Preview
     - name: Install Proton Model
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -223,7 +229,7 @@ jobs:
 
     - name: Notify Proton Success
       id: notify_success
-      if: needs.terraform.result == 'success'
+      if: needs.terraform.result == 'success' && steps.tf_init.outcome == 'success'
       run: |
         # Get outputs as json
         outputs_json=$(terraform output -json)
@@ -239,7 +245,7 @@ jobs:
         echo "Notify success!"   
         
     - name: Notify Proton Failure
-      if: needs.terraform.result == 'failure' || needs.terraform.result == 'cancelled'
+      if: needs.terraform.result == 'failure' || needs.terraform.result == 'cancelled' || steps.tf_init.outcome != 'success'
       run: |
         aws proton notify-resource-deployment-status-change --region ${{ needs.get-deployment-data.outputs.proton_region }} --resource-arn ${{ needs.get-deployment-data.outputs.resource_arn }} --status FAILED --deployment-id ${{ needs.get-deployment-data.outputs.deployment_id }}
         echo "Notify failure!"

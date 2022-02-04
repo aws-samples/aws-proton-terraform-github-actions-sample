@@ -3,5 +3,10 @@
         "role": "arn:aws:iam::617296401743:role/TerraformGitHubActionsRole",
         "region": "us-west-2",
         "state_bucket":"wishnick-terraform-states"
-    }
+    },
+    "tf_tutorial_env": {
+        "role": "arn:aws:iam::617296401743:role/TerraformGitHubActionsRole",
+        "region": "us-west-2",
+        "state_bucket":"wishnick-terraform-states"
+    }    
 }

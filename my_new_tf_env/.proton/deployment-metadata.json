@@ -1,0 +1,9 @@
+{
+  "deploymentId" : "4cc4a577-908e-4f38-84bd-2f9c4392de84",
+  "resourceMetadata" : {
+    "arn" : "arn:aws:proton:us-east-1:617296401743:environment/my_new_tf_env",
+    "templateArn" : "arn:aws:proton:us-east-1:617296401743:environment-template/tf-vpc-env",
+    "templateMajorVersion" : "1",
+    "templateMinorVersion" : "0"
+  }
+}

@@ -219,9 +219,9 @@ jobs:
       id: assume_role
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-region: ${{ needs.get-deployment-data.outputs.target_region }}
+        aws-region: ${{ needs.get-deployment-data.outputs.proton_region }}
         role-to-assume: ${{ needs.get-deployment-data.outputs.role_arn }}
-        role-session-name: TF-Github-Actions
+        role-session-name: TF-Github-Actions-Notify-Proton
       
     # This is a temporary measure until this feature exits Public Preview
     - name: Install Proton Model

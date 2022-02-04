@@ -207,6 +207,10 @@ jobs:
         shell: bash # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
 
     steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+      
     - name: Configure AWS Credentials
       id: assume_role
       uses: aws-actions/configure-aws-credentials@v1

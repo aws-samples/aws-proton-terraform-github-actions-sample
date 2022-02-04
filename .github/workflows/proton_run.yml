@@ -132,9 +132,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ needs.get-deployment-data.outputs.environment }}
 
-    outputs:
-      tf_outputs: ${{ steps.tf_get_outputs.outputs.tf_outputs }}
-
     permissions:
       id-token: write
       contents: read
@@ -190,20 +187,6 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve -var="aws_region=${{ needs.get-deployment-data.outputs.target_region }}"
 
-    - name: Terraform Get Outputs
-      id: tf_get_outputs
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: |
-        # Get outputs as json
-        outputs_json=$(terraform output -json)
-
-        # The outputs parameters expects a list of key=keyName,valueString=value key=key2Name,valueString=value2 etc...
-        # So here we convert the output json into a shell array
-        # NOTE: This will probably not play nicely with complex output objects (non primitives)
-
-        formatted_outputs=( $(echo $outputs_json | jq -r "to_entries|map(\"key=\(.key),valueString=\(.value.value|tostring)\")|.[]") )
-        echo "::set-output name=tf_outputs::$formatted_outputs"
-
   notify-proton:
     name: 'Notify Proton'
     needs: 
@@ -223,9 +206,14 @@ jobs:
       id: assume_role
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-region: ${{ needs.get-deployment-data.outputs.proton_region }}
+        aws-region: ${{ needs.get-deployment-data.outputs.target_region }}
         role-to-assume: ${{ needs.get-deployment-data.outputs.role_arn }}
         role-session-name: TF-Github-Actions-Notify-Proton
+        
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      id: tf_init
+      run: terraform init -backend-config="bucket=${{ needs.get-deployment-data.outputs.state_bucket }}" -backend-config="key=${{ needs.get-deployment-data.outputs.working_directory }}terraform.tfstate" -backend-config="region=${{ needs.get-deployment-data.outputs.target_region }}"
       
     # This is a temporary measure until this feature exits Public Preview
     - name: Install Proton Model
@@ -237,8 +225,17 @@ jobs:
       id: notify_success
       if: needs.terraform.result == 'success'
       run: |
-       # Notify proton
-        aws proton notify-resource-deployment-status-change --region ${{ needs.get-deployment-data.outputs.proton_region }} --resource-arn ${{ needs.get-deployment-data.outputs.resource_arn }} --status SUCCEEDED --deployment-id ${{ needs.get-deployment-data.outputs.deployment_id }} --outputs ${{ needs.terraform.outputs.tf_outputs }}
+        # Get outputs as json
+        outputs_json=$(terraform output -json)
+
+        # The outputs parameters expects a list of key=keyName,valueString=value key=key2Name,valueString=value2 etc...
+        # So here we convert the output json into a shell array
+        # NOTE: This will probably not play nicely with complex output objects (non primitives)
+
+        formatted_outputs=( $(echo $outputs_json | jq -r "to_entries|map(\"key=\(.key),valueString=\(.value.value|tostring)\")|.[]") )
+      
+        # Notify proton
+        aws proton notify-resource-deployment-status-change --region ${{ needs.get-deployment-data.outputs.proton_region }} --resource-arn ${{ needs.get-deployment-data.outputs.resource_arn }} --status SUCCEEDED --deployment-id ${{ needs.get-deployment-data.outputs.deployment_id }} --outputs $formatted_outputs
         echo "Notify success!"   
         
     - name: Notify Proton Failure

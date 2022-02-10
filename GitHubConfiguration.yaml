@@ -33,8 +33,7 @@ Resources:
       Url: https://token.actions.githubusercontent.com
       ThumbprintList: [6938fd4d98bab03faadb97b34396831e3780aea1]
       ClientIdList:
-        - sigstore
-        - sts.amazon.com
+        - sts.amazonaws.com
 
   StateFileBucket:
     # This bucket will be used to store your Terraform Open Source state files

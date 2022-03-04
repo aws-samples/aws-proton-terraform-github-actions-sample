@@ -11,7 +11,7 @@ output "vpc_arn" {
 }
 
 output "subnet_ids" {
-  value = module.vpc.private_subnets
+  value = one(module.vpc.private_subnets) # there is a known issue with terraform lists as outputs
 }
 
 output "security_group_id" {

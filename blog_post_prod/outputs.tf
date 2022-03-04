@@ -11,7 +11,7 @@ output "vpc_arn" {
 }
 
 output "subnet_ids" {
-  value = module.vpc.public_subnets
+  value = module.vpc.private_subnets
 }
 
 output "security_group_id" {

@@ -1,0 +1,10 @@
+{
+  "deploymentId" : "3403b480-e1dc-4631-bd31-c3d88bfdec79",
+  "resourceMetadata" : {
+    "arn" : "arn:aws:proton:us-east-1:617296401743:service/blog_post_lambdas/service-instance/blog_post_lambda_prod",
+    "templateArn" : "arn:aws:proton:us-east-1:617296401743:service-template/blog-post-lambda-service",
+    "templateMajorVersion" : "1",
+    "templateMinorVersion" : "7",
+    "environmentArn" : "arn:aws:proton:us-east-1:617296401743:environment/blog_post_prod"
+  }
+}

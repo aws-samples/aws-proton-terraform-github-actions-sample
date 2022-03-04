@@ -9,6 +9,8 @@ If the resource is no longer is accessible within AWS Proton, it may have been d
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
 
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AdministratorAccess"]
+
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",

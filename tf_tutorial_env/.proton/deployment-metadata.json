@@ -1,0 +1,9 @@
+{
+  "deploymentId" : "bead8044-caba-4e39-8350-cc555278eea6",
+  "resourceMetadata" : {
+    "arn" : "arn:aws:proton:us-east-1:617296401743:environment/tf_tutorial_env",
+    "templateArn" : "arn:aws:proton:us-east-1:617296401743:environment-template/blog-post-env-template",
+    "templateMajorVersion" : "1",
+    "templateMinorVersion" : "3"
+  }
+}

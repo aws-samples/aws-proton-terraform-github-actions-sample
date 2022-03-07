@@ -225,12 +225,6 @@ jobs:
       continue-on-error: true
       run: terraform init -backend-config="bucket=${{ needs.get-deployment-data.outputs.state_bucket }}" -backend-config="key=${{ needs.get-deployment-data.outputs.working_directory }}terraform.tfstate" -backend-config="region=${{ needs.get-deployment-data.outputs.target_region }}"
 
-    # This is a temporary measure until this feature exits Public Preview
-    - name: Install Proton Model
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: |
-        aws s3 cp s3://aws-proton-preview-public-files/model/proton-2020-07-20.normal.json  .
-
     - name: Notify Proton Success
       id: notify_success
       if: needs.terraform.result == 'success' && steps.tf_init.outcome == 'success'
@@ -245,7 +239,7 @@ jobs:
         formatted_outputs=( $(echo $outputs_json | jq -r "to_entries|map(\"key=\(.key),valueString=\(.value.value|tostring)\")|.[]") )
       
         # Notify proton
-        aws proton notify-resource-deployment-status-change --region ${{ needs.get-deployment-data.outputs.proton_region }} --resource-arn ${{ needs.get-deployment-data.outputs.resource_arn }} --status SUCCEEDED --deployment-id ${{ needs.get-deployment-data.outputs.deployment_id }} --outputs $formatted_outputs
+        aws proton notify-resource-deployment-status-change --region ${{ needs.get-deployment-data.outputs.proton_region }} --resource-arn ${{ needs.get-deployment-data.outputs.resource_arn }} --status SUCCEEDED --deployment-id ${{ needs.get-deployment-data.outputs.deployment_id }} --outputs ${formatted_outputs[*]}
         echo "Notify success!"   
         
     - name: Notify Proton Failure

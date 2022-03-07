@@ -1,0 +1,9 @@
+{
+  "deploymentId" : "bba59226-4c3d-440a-a1b5-9d61a17505e1",
+  "resourceMetadata" : {
+    "arn" : "arn:aws:proton:us-east-1:617296401743:environment/blog_post_prod",
+    "templateArn" : "arn:aws:proton:us-east-1:617296401743:environment-template/blog-post-env-template",
+    "templateMajorVersion" : "1",
+    "templateMinorVersion" : "2"
+  }
+}

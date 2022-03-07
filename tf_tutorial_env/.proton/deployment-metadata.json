@@ -1,9 +1,0 @@
-{
-  "deploymentId" : "4f188833-b956-425e-91b1-f764c625de47",
-  "resourceMetadata" : {
-    "arn" : "arn:aws:proton:us-east-1:617296401743:environment/tf_tutorial_env",
-    "templateArn" : "arn:aws:proton:us-east-1:617296401743:environment-template/blog-post-env-template",
-    "templateMajorVersion" : "1",
-    "templateMinorVersion" : "3"
-  }
-}

@@ -110,7 +110,7 @@ jobs:
         fi
 
         if [[ $(jq -r --arg env $environment_name 'has($env)' env_config.json) = "false" ]]; then
-          echo "Missing $env from env_config.json, existing"
+          echo "Missing \$env from env_config.json, exiting"
           exit 1
         fi
 

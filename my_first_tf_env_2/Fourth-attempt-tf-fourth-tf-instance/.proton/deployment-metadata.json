@@ -1,0 +1,11 @@
+{
+  "deploymentId" : "cd9a940c-7d24-40bd-8d75-186387284867",
+  "isResourceDeleted" : false,
+  "resourceMetadata" : {
+    "arn" : "arn:aws:proton:us-east-1:987544922694:service/Fourth-attempt-tf/service-instance/fourth-tf-instance",
+    "templateArn" : "arn:aws:proton:us-east-1:987544922694:service-template/sample-lambda-function-template",
+    "templateMajorVersion" : "1",
+    "templateMinorVersion" : "0",
+    "environmentArn" : "arn:aws:proton:us-east-1:987544922694:environment/my_first_tf_env_2"
+  }
+}

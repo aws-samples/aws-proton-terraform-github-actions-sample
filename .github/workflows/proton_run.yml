@@ -83,7 +83,7 @@ jobs:
         deployment_id=$(jq -r '.deploymentId' ${{ steps.find-modified.outputs.deployment-metadata-path }})
         echo "::set-output name=deployment_id::$deployment_id"
 
-        is_deleted=$(jq -r '.isResourceDeleted" ${{ steps.find-modified.outputs.deployment-metadata-path }})'
+        is_deleted=$(jq -r '.isResourceDeleted' ${{ steps.find-modified.outputs.deployment-metadata-path }})
         echo "::set-output name=is_deleted::$is_deleted"
 
 

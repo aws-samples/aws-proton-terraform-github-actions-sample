@@ -6,6 +6,9 @@ Welcome! This repository should help you test how Proton works with Terraform Op
 2. A GitHub Actions task to run Terraform Open Source based on commits to this repo
 3. An AWS Proton sample template that uses Terraform files to work
 
+## GitHub Actions Walkthrough
+For a walkthrough of what the GitHub Actions are doing, check out the [wiki](https://github.com/aws-samples/aws-proton-terraform-github-actions-sample/wiki)
+
 ## How to:
 
 You will need the following:

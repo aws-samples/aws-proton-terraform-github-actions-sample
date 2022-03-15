@@ -30,8 +30,8 @@ aws cloudformation create-stack --stack-name aws-proton-terraform-role-stack \
    --parameters ParameterKey=FullRepoName,ParameterValue=GITHUB_USER/aws-proton-terraform-github-actions-sample \
    --capabilities CAPABILITY_NAMED_IAM
 ```
-5. Open the file `env_config.json`. Add a new object to the configuration dictionary where the key is `ENVIRONMENT_NAME`, `role` is the `Role` output from the stack created in (3), and the region with `REGION`. This will tell Terraform the role and region to use for deployments. You can use different roles for each environment by adding them to this file
-6. In the same file update `state_bucket` with the `BucketName` output from (3). This will tell Terraform where to store the state file.
+5. Open the file `env_config.json`. Add a new object to the configuration dictionary where the key is `ENVIRONMENT_NAME`, `role` is the `Role` output from the stack created in (4), and the region with `REGION`. This will tell Terraform the role and region to use for deployments. You can use different roles for each environment by adding them to this file
+6. In the same file update `state_bucket` with the `BucketName` output from (4). This will tell Terraform where to store the state file.
 7. Commit your changes and push them to your forked repository.
 8. Take the sample template and create a Proton environment template by following the instructions. Make sure to replace `TEMPLATE_BUCKET` with the name of the bucket in which you would like to store your Proton templates. For more information see the documentation [here](https://docs.aws.amazon.com/proton/latest/adminguide/template-create.html)
 ```

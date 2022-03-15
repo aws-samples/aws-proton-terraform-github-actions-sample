@@ -1,7 +1,7 @@
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
 
-  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"]
 
   assume_role_policy = <<EOF
 {

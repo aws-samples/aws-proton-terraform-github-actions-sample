@@ -1,3 +1,0 @@
-proton: EnvironmentSpec
-spec:
-  vpc_name: aws-proton-sample-vpc

@@ -42,6 +42,13 @@ jobs:
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Verify env_config updated
+      run: |
+        if grep -q REPLACE_ME env_config.json; then
+          echo "You must update env_config.json or update this workflow to not require it."
+          exit 1
+        fi
       
     - name: Get changed files
       id: files
@@ -264,7 +271,6 @@ jobs:
     name: 'Run terraform destroy'
     needs: 
     - get-deployment-data
-    - terraform
     runs-on: ubuntu-latest
     environment: ${{ needs.get-deployment-data.outputs.environment }}
 
@@ -300,4 +306,4 @@ jobs:
     
     - name: Terraform Destroy
       id: tf_destroy
-      run: terraform apply -auto-approve -destroy
+      run: terraform apply -auto-approve -destroy -var="aws_region=${{ needs.get-deployment-data.outputs.target_region }}"

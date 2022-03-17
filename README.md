@@ -16,7 +16,9 @@ You will need the following:
 
 When you see these strings in the instructions below, you should replace them with the value you have chosen.
 
-1. Create a new repository from this repository, which is a template, into your GitHub account
+1. Create a new repository from this repository
+   - If you plan on using this template as a starting point and making changes, this is a Repository Template, so you can just click "Use this template" and a new repository will get created in your account that is an exact copy of this one.
+   - If you don't plan on really making any changes, you can also fork this template, and then if/when it is updated you can get those updates.
 2. We will be using Github Actions to deploy our Terraform template, and notify Proton of the deployment status. You can see the steps of our workflow in [proton_run.yml](https://github.com/aws-samples/aws-proton-terraform-github-actions-sample/blob/main/.github/workflows/proton_run.yml) and [terraform.yml](https://github.com/aws-samples/aws-proton-terraform-github-actions-sample/blob/main/.github/workflows/terraform.yml). Forked repositories do not have Actions enabled by default, see [this page](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository) for information on how to enable them.
 3. Ensure you have a CodeStar Connection set up for the account into which you
    forked the repo in the previous step. For information on how to set that up see [this documentation](https://docs.aws.amazon.com/dtconsole/latest/userguide/connections-create.html).

@@ -121,8 +121,16 @@ jobs:
           working_directory=pipeline/$service_name
         fi
 
-        if [[ $(jq -r --arg env $environment_name 'has($env)' env_config.json) = "false" ]]; then
-          if [[ $(jq -r --arg env $environment_name 'has("*")' env_config.json) = "false" ]]; then
+        if [[ $(jq -r --arg env $environment_name 'has($env)' env_config.json) = "true" ]]; then
+          role_arn=$(jq -r --arg env $environment_name '.[$env]["role"]' env_config.json)
+          target_region=$(jq -r --arg env $environment_name '.[$env]["region"]' env_config.json)
+          state_bucket=$(jq -r --arg env $environment_name '.[$env]["state_bucket"]' env_config.json)   
+        else     
+          if [[ $(jq -r --arg env $environment_name 'has("*")' env_config.json) = "true" ]]; then
+            role_arn=$(jq -r --arg env $environment_name '.["*"]["role"]' env_config.json)
+            target_region=$(jq -r --arg env $environment_name '.["*"]["region"]' env_config.json)
+            state_bucket=$(jq -r --arg env $environment_name '.["*"]["state_bucket"]' env_config.json)
+          else
             echo "Missing $environment_name or * from env_config.json, exiting"
             exit 1
           fi
@@ -130,16 +138,6 @@ jobs:
         
         echo "::set-output name=working_directory::$working_directory"
         echo "::set-output name=environment::$environment_name"
-        
-        if [[ $(jq -r --arg env $environment_name 'has($env)' env_config.json) = "true" ]]; then
-          role_arn=$(jq -r --arg env $environment_name '.[$env]["role"]' env_config.json)
-          target_region=$(jq -r --arg env $environment_name '.[$env]["region"]' env_config.json)
-          state_bucket=$(jq -r --arg env $environment_name '.[$env]["state_bucket"]' env_config.json)
-        else
-          role_arn=$(jq -r --arg env $environment_name '.["*"]["role"]' env_config.json)
-          target_region=$(jq -r --arg env $environment_name '.["*"]["region"]' env_config.json)
-          state_bucket=$(jq -r --arg env $environment_name '.["*"]["state_bucket"]' env_config.json)
-        fi
         
         echo "::set-output name=role_arn::$role_arn"
         echo "::set-output name=target_region::$target_region"

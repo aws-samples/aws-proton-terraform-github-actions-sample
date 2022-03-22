@@ -26,7 +26,7 @@ When you see these strings in the instructions below, you should replace them wi
 ```
 aws cloudformation create-stack --stack-name aws-proton-terraform-role-stack \
    --template-body file:///$PWD/GitHubConfiguration.yaml \
-   --parameters ParameterKey=FullRepoName,ParameterValue=GITHUB_USER/aws-proton-terraform-github-actions-sample \
+   --parameters ParameterKey=FullRepoName,ParameterValue=$GITHUB_USER/aws-proton-terraform-github-actions-sample \
    --capabilities CAPABILITY_NAMED_IAM
 ```
 5. Open the file `env_config.json`. Add a new object to the configuration dictionary where the key is `ENVIRONMENT_NAME`, `role` is the `Role` output from the stack created in (3), and the region with `REGION`. This will tell Terraform the role and region to use for deployments. You can use different roles for each environment by adding them to this file
@@ -37,10 +37,10 @@ aws cloudformation create-stack --stack-name aws-proton-terraform-role-stack \
 10. Deploy your environment in Proton by following the instructions using the following commands. Change `GITHUB_USER` to be name of the GitHub account with the forked repository. For more information see the documentation [here](https://docs.aws.amazon.com/proton/latest/adminguide/ag-create-env.html#ag-create-env-pull-request)
 ```
  aws proton create-environment \
-        --name "ENVIRONMENT_NAME" \
+        --name $ENVIRONMENT_NAME \
         --template-name "ENVIRONMENT_TEMPLATE_NAME" \
         --template-major-version "1" \
-        --provisioning-repository="branch=main,name=GITHUB_USER/aws-proton-terraform-github-actions-sample,provider=GITHUB" \
+        --provisioning-repository="branch=main,name=$GITHUB_USER/aws-proton-terraform-github-actions-sample,provider=GITHUB" \
         --spec file:///$PWD/specs/env-spec.yml
 ```
 11. Shortly after you trigger the deployment, come back to your repository to see the Pull Request. Once you merge it, you can go back to Proton and see the updated status of your newly created environment

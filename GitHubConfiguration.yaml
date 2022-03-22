@@ -1,6 +1,7 @@
 Parameters:
   FullRepoName:
     Type: String
+    Description: "The organization and name of the repository within which you will be utilizing created IAM Role within GitHub Actions (e.g. org/repo_name)"
 
 Resources:
   Role:
@@ -45,9 +46,9 @@ Resources:
          - !Ref AWS::AccountId
 Outputs:
   Role:
-    Description: "The role that will be used to provision infrastructure. Enter it in your env_config.json file"
+    Description: "The role that will be used to provision infrastructure. Configure it per environment in your env_config.json file"
     Value: !GetAtt Role.Arn
 
   BucketName:
-    Description: "Name of the bucket for our state files. Enter it in your terraform.yml file"
-    Value: !Ref "AWS::StackName"
+    Description: "Name of the bucket for our state files. Configure it per environment in your env_config.json file"
+    Value: !Ref StateFileBucket

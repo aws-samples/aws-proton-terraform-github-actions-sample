@@ -118,7 +118,7 @@ jobs:
 
           service_name=${split_resources[1]}
 
-          working_directory=pipeline/$service_name
+          working_directory=$service_name/pipeline
         fi
 
         if [[ $(jq -r --arg env $environment_name 'has($env)' env_config.json) = "true" ]]; then

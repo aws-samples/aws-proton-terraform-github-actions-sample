@@ -79,7 +79,7 @@ jobs:
     - name: Get data
       id: get-data
       run: |
-        modified_resource_arn=$(jq -r '.resourceMetadata.arn' ${{ steps.find-modified.outputs.deployment-metadata-path }})
+        modified_resource_arn=$(jq -r '(.resourceMetadata.arn // .componentMetadata.arn)' ${{ steps.find-modified.outputs.deployment-metadata-path }})
         echo "::set-output name=resource_arn::$modified_resource_arn"
         
         IFS=':'
@@ -119,6 +119,14 @@ jobs:
           service_name=${split_resources[1]}
 
           working_directory=$service_name/pipeline
+        elif [[ "$modified_resource_arn" == *":component/"* ]]; then
+          environment_arn=$(jq -r '.componentMetadata.environmentArn' ${{ steps.find-modified.outputs.deployment-metadata-path }})
+          environment_name=${environment_arn##*/}
+          resource_portion=${modified_resource_arn##*:}
+          IFS='/'
+          read -a split_resources <<< "$resource_portion"
+          component_name=${split_resources[1]}
+          working_directory=$environment_name/$component_name/  
         fi
 
         if [[ $(jq -r --arg env $environment_name 'has($env)' env_config.json) = "true" ]]; then
